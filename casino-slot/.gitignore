@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+*.egg
+
+# Virtual envs
+.venv/
+venv/
+ENV/
+
+# SQLite (local/dev)
+backend/casino.db
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+
+# Node (not used, but safe)
+node_modules/
+dist/
+build/

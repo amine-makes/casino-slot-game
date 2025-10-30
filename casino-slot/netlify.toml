@@ -1,0 +1,15 @@
+[build]
+  publish = "frontend"
+  command = ""
+  edge_functions = "netlify/edge-functions"
+
+# Route all /api/* requests to the proxy edge function
+[[edge_functions]]
+  function = "proxy"
+  path = "/api/*"
+
+# Optional: clean URLs and default to professional index
+[[redirects]]
+  from = "/"
+  to = "/index_professional.html"
+  status = 200

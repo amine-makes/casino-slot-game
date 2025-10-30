@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>� Cosmic Fortunes - Provably Fair Slot Game</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Particle container for win effects -->
+    <canvas id="particles" style="position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1000;"></canvas>
+    <div class="container">
+        <header>
+            <h1>🌌 COSMIC FORTUNES 🌍</h1>
+            <p class="subtitle">Three Planets, Infinite Possibilities</p>
+        </header>
+
+        <div class="main-game">
+            <!-- Balance Display -->
+            <div class="balance-section">
+                <div class="balance-item">
+                    <span class="label">Balance:</span>
+                    <span class="value" id="balance">$1000.00</span>
+                </div>
+                <div class="balance-item">
+                    <span class="label">Last Win:</span>
+                    <span class="value win" id="lastWin">$0.00</span>
+                </div>
+                <div class="balance-item">
+                    <span class="label">Sound:</span>
+                    <button class="btn-small" id="soundToggle" onclick="toggleSound()">🔊 ON</button>
+                </div>
+            </div>
+
+            <!-- Slot Machine -->
+            <div class="slot-machine">
+                <div class="slot-display">
+                    <div class="reel" id="reel-0">
+                        <div class="symbol">🌍</div>
+                        <div class="symbol">⭐</div>
+                        <div class="symbol">🌙</div>
+                    </div>
+                    <div class="reel" id="reel-1">
+                        <div class="symbol">🌍</div>
+                        <div class="symbol">🌌</div>
+                        <div class="symbol">💫</div>
+                    </div>
+                    <div class="reel" id="reel-2">
+                        <div class="symbol">✨</div>
+                        <div class="symbol">🎰</div>
+                        <div class="symbol">🌍</div>
+                    </div>
+                    <div class="reel" id="reel-3">
+                        <div class="symbol">⭐</div>
+                        <div class="symbol">🌙</div>
+                        <div class="symbol">🌍</div>
+                    </div>
+                    <div class="reel" id="reel-4">
+                        <div class="symbol">🌌</div>
+                        <div class="symbol">🌠</div>
+                        <div class="symbol">✨</div>
+                    </div>
+                </div>
+                
+                <!-- Paylines overlay -->
+                <div class="paylines" id="paylines"></div>
+            </div>
+
+            <!-- Win Display -->
+            <div class="win-display" id="winDisplay" style="display: none;">
+                <div class="win-amount" id="winAmount">$0.00</div>
+                <div class="win-text" id="winText"></div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <div class="bet-controls">
+                    <label>Bet per Line:</label>
+                    <button class="btn-small" onclick="changeBet(-0.1)">-</button>
+                    <input type="number" id="betAmount" value="1.00" min="0.1" max="100" step="0.1">
+                    <button class="btn-small" onclick="changeBet(0.1)">+</button>
+                </div>
+                
+                <div class="line-controls">
+                    <label>Active Lines:</label>
+                    <select id="activeLines">
+                        <option value="1">1 Line</option>
+                        <option value="3">3 Lines</option>
+                        <option value="5">5 Lines</option>
+                        <option value="7">7 Lines</option>
+                        <option value="9" selected>9 Lines (All)</option>
+                    </select>
+                </div>
+
+                <button class="btn-spin" id="spinBtn" onclick="spin()">
+                    <span class="spin-text">SPIN</span>
+                    <span class="total-bet" id="totalBet">$9.00</span>
+                </button>
+                
+                <button class="btn-auto" id="autoSpinBtn" onclick="autoSpinner.isRunning ? stopAutoSpin() : showAutoSpinModal()">
+                    Auto Spin
+                </button>
+            </div>
+        </div>
+        
+        <!-- Statistics Section -->
+        <div class="stats-section">
+            <h2>📊 Session Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Total Spins:</span>
+                    <span class="stat-value" id="totalSpins">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Win Rate:</span>
+                    <span class="stat-value" id="winRate">0%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Biggest Win:</span>
+                    <span class="stat-value" id="biggestWin">$0.00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Net Profit:</span>
+                    <span class="stat-value" id="netProfit">$0.00</span>
+                </div>
+            </div>
+            <button class="btn-small" onclick="resetStats()" style="margin-top: 15px;">Reset Stats</button>
+        </div>
+
+        <!-- Provably Fair Section -->
+        <div class="fairness-section">
+            <h2>🔒 Provably Fair</h2>
+            <div class="fairness-grid">
+                <div class="fairness-item">
+                    <label>Server Seed Hash:</label>
+                    <input type="text" id="serverSeedHash" readonly>
+                </div>
+                <div class="fairness-item">
+                    <label>Client Seed:</label>
+                    <div class="seed-input-group">
+                        <input type="text" id="clientSeed" readonly>
+                        <button class="btn-small" onclick="showChangeSeedModal()">Change</button>
+                    </div>
+                </div>
+                <div class="fairness-item">
+                    <label>Nonce:</label>
+                    <input type="text" id="nonce" readonly>
+                </div>
+                <div class="fairness-item full-width">
+                    <button class="btn-secondary" onclick="showVerifyModal()">Verify Last Result</button>
+                    <button class="btn-secondary" onclick="showPaytable()">View Paytable</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Info -->
+        <div class="session-info">
+            <p>Session ID: <span id="sessionId">Loading...</span></p>
+            <button class="btn-small" onclick="newGame()">New Game</button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="paytableModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('paytableModal')">&times;</span>
+            <h2>💰 Paytable</h2>
+            <div id="paytableContent"></div>
+        </div>
+    </div>
+
+    <div id="verifyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('verifyModal')">&times;</span>
+            <h2>🔍 Verify Result</h2>
+            <div id="verifyContent"></div>
+        </div>
+    </div>
+
+    <div id="changeSeedModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('changeSeedModal')">&times;</span>
+            <h2>🔄 Change Client Seed</h2>
+            <p>Changing your client seed will reveal the current server seed for verification.</p>
+            <label>New Client Seed (optional):</label>
+            <input type="text" id="newClientSeed" placeholder="Leave empty for random">
+            <button class="btn-primary" onclick="changeClientSeed()">Change Seed</button>
+            <div id="changeSeedResult"></div>
+        </div>
+    </div>
+
+    <div id="autoSpinModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('autoSpinModal')">&times;</span>
+            <h2>🔄 Auto Spin Settings</h2>
+            <label>Number of Spins:</label>
+            <input type="number" id="autoSpinCount" value="10" min="1" max="1000">
+            <label style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">
+                <input type="checkbox" id="stopOnWin">
+                Stop on any win
+            </label>
+            <button class="btn-primary" onclick="startAutoSpin()">Start Auto Spin</button>
+        </div>
+    </div>
+
+    <script src="sounds.js"></script>
+    <script src="features.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

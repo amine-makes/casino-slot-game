@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Analytics Dashboard</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' http://localhost:5000 http://127.0.0.1:5000; img-src 'self' data:; font-src 'self' data:; base-uri 'none'; frame-ancestors 'none'" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <div class="admin-container">
+    <h1>Analytics Dashboard</h1>
+    <div class="controls">
+  <label>API Base URL <input id="apiBase" value="/api" /></label>
+      <label>Admin Token <input id="adminToken" type="password" placeholder="Enter ADMIN_TOKEN" /></label>
+      <label>Since (epoch) <input id="since" type="number" placeholder="(optional)" /></label>
+      <label>Until (epoch) <input id="until" type="number" placeholder="(optional)" /></label>
+      <button id="loadSummary">Load Summary</button>
+      <button id="loadEvents">Load Events</button>
+      <button id="loadThreads">Load Support Threads</button>
+    </div>
+    <div class="grid">
+      <div>
+        <h2>Summary</h2>
+        <pre id="summary"></pre>
+      </div>
+      <div>
+        <h2>Recent Events</h2>
+        <pre id="events"></pre>
+      </div>
+    </div>
+    <div class="grid" style="margin-top: 16px;">
+      <div>
+        <h2>Support Threads</h2>
+        <pre id="threads"></pre>
+      </div>
+      <div>
+        <h2>Thread Messages</h2>
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:6px;">
+          <input id="threadId" placeholder="conversation_id" style="flex:1;" />
+          <button id="loadMessages">Open</button>
+        </div>
+        <pre id="messages"></pre>
+      </div>
+    </div>
+  </div>
+  <script src="admin.js"></script>
+</body>
+</html>

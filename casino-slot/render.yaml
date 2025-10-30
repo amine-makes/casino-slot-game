@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: casino-slot-backend
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 2 --threads 4 --timeout 60
+    healthCheckPath: /api/health
+    autoDeploy: true
+    plan: free
+    envVars:
+      - key: ADMIN_TOKEN
+        value: change-me-strong-token
+      - key: SIGNING_REQUIRED_ADMIN
+        value: "false"
+      # Optional: restrict admin access by IPs (comma-separated)
+      - key: ALLOWED_ADMIN_IPS
+        value: ""
+      # Optional: Enable signed admin requests
+      - key: SIGNING_SECRET
+        value: ""
+      # Optional: CORS origins if you bypass Netlify proxy (not needed for /api edge proxy)
+      - key: ALLOWED_ORIGINS
+        value: "*"

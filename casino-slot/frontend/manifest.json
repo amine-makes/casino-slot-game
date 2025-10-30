@@ -1,0 +1,16 @@
+{
+  "name": "Cosmic Fortunes",
+  "short_name": "Cosmic",
+  "start_url": "index_professional.html",
+  "display": "standalone",
+  "background_color": "#0a0e27",
+  "theme_color": "#00d4ff",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

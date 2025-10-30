@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌌 Cosmic Fortunes — Provably Fair Slots with 3% House Edge</title>
+    <meta name="description" content="Play Cosmic Fortunes — a provably fair, neon-cosmic slot experience with a 3% house edge, fast payouts, and WILD features. Try your luck now!">
+    <meta name="theme-color" content="#00d4ff">
+    <meta property="og:title" content="Cosmic Fortunes — Provably Fair Slots">
+    <meta property="og:description" content="Neon cosmic slots. Provably fair RNG. 3% house edge. Fast payouts.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/favicon.svg">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="manifest.json">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <link rel="stylesheet" href="style_professional.css">
+</head>
+<body>
+    <!-- Marketing Site Header / Navigation -->
+    <div class="site-header">
+        <div class="site-brand">🌌 Cosmic Fortunes</div>
+        <nav class="site-nav">
+            <a href="#home" data-scroll>Home</a>
+            <a href="#features" data-scroll>Features</a>
+            <a href="#fair" data-scroll>Provably Fair</a>
+            <a href="#how" data-scroll>How It Works</a>
+            <a href="#testimonials" data-scroll>Testimonials</a>
+            <a href="#faq" data-scroll>FAQ</a>
+        </nav>
+        <div class="site-cta">
+            <button class="pill-btn outline" id="navDepositCta">Deposit</button>
+            <button class="pill-btn" id="navPlayCta">Play Now</button>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="promo-banner">
+            🎁 Welcome Bonus: 100% up to $500 — Ends in <span id="promoCountdown">03:00:00</span>
+            <button class="pill-btn xs" id="promoDepositCta">Claim</button>
+        </div>
+        <div class="hero-inner">
+            <h1>Provably Fair Cosmic Slots</h1>
+            <p>Neon visuals, WILD wins, and transparent RNG. Target 97% RTP — a fair chance, massive excitement.</p>
+            <div class="hero-ctas">
+                <button class="pill-btn" id="heroPlayCta">Start Playing</button>
+                <button class="pill-btn outline" id="heroDepositCta">Deposit</button>
+            </div>
+            <div class="trust-badges">
+                <span>🔒 HMAC-SHA256</span>
+                <span>⚖ 3% House Edge</span>
+                <span>⚡ Fast Payouts</span>
+                <span>🕑 24/7</span>
+            </div>
+        </div>
+    </section>
+    <!-- Particle canvas for win effects -->
+    <canvas id="particles"></canvas>
+    
+    <!-- Auto-spin indicator -->
+    <div class="auto-spin-active" id="autoSpinIndicator">
+        AUTO SPIN: <span id="autoSpinCount">0</span>
+    </div>
+
+    <div class="container" id="play">
+        <!-- Header -->
+        <header>
+            <h1>COSMIC<br>FORTUNES</h1>
+            <p class="subtitle">Three Planets, Infinite Possibilities</p>
+        </header>
+
+        <!-- Top Bar: Balance and Bet -->
+        <div class="top-bar">
+            <div class="balance-box">
+                <button class="icon-btn" title="Back">←</button>
+                <div>
+                    <div class="balance-label">BALANCE</div>
+                    <div class="balance-value" id="balance">$0.00</div>
+                </div>
+                <div class="wallet-actions">
+                    <button class="pill-btn" id="addFundsBtn">+ Add</button>
+                    <button class="pill-btn outline" id="withdrawBtn">Withdraw</button>
+                </div>
+            </div>
+            
+            <div class="bet-box">
+                <div>
+                    <div class="bet-label">BET</div>
+                    <div class="bet-value" id="betDisplay">1.50</div>
+                </div>
+                <button class="icon-btn" id="betDownBtn">−</button>
+                <button class="icon-btn" id="betUpBtn">+</button>
+                <div style="width:10px;"></div>
+                <div>
+                    <div class="bet-label">LOT</div>
+                    <div class="bet-value" id="lotDisplay">1</div>
+                </div>
+                <button class="icon-btn" id="lotDownBtn">−</button>
+                <button class="icon-btn" id="lotUpBtn">+</button>
+                <div>
+                    <div class="bet-value" id="totalBetDisplay">$1.50</div>
+                </div>
+                <button class="icon-btn" title="Settings" id="openSettingsBtn">⚙</button>
+            </div>
+        </div>
+
+        <!-- Slot Machine -->
+        <div class="slot-container">
+            <div class="solive-spins-label">SOLIVE SPINS</div>
+            
+            <div class="slot-machine">
+                <div class="slot-display" id="slotDisplay">
+                    <!-- Row 1 -->
+                    <div class="reel" id="reel-0">
+                        <div class="symbol" data-row="0" data-col="0">🪐</div>
+                        <div class="symbol" data-row="1" data-col="0">🌙</div>
+                        <div class="symbol" data-row="2" data-col="0">🪐</div>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="reel" id="reel-1">
+                        <div class="symbol" data-row="0" data-col="1">🪐</div>
+                        <div class="symbol" data-row="1" data-col="1">
+                            <div class="wild-text">WILD!</div>
+                        </div>
+                        <div class="symbol" data-row="2" data-col="1">🌍</div>
+                    </div>
+                    <!-- Row 3 -->
+                    <div class="reel" id="reel-2">
+                        <div class="symbol" data-row="0" data-col="2">🌍</div>
+                        <div class="symbol" data-row="1" data-col="2">🌙</div>
+                        <div class="symbol" data-row="2" data-col="2">
+                            <div class="wild-text">WILD!</div>
+                        </div>
+                    </div>
+                    <!-- Row 4 -->
+                    <div class="reel" id="reel-3">
+                        <div class="symbol" data-row="0" data-col="3">🪐</div>
+                        <div class="symbol" data-row="1" data-col="3">🪐</div>
+                        <div class="symbol" data-row="2" data-col="3">🌍</div>
+                    </div>
+                    <!-- Row 5 -->
+                    <div class="reel" id="reel-4">
+                        <div class="symbol" data-row="0" data-col="4">🪐</div>
+                        <div class="symbol" data-row="1" data-col="4">🌙</div>
+                        <div class="symbol" data-row="2" data-col="4">🌙</div>
+                    </div>
+                </div>
+                
+                <!-- Bonus Spins Banner -->
+                <div class="bonus-banner" id="bonusBanner">
+                    <div class="bonus-banner-text">BONUS SPINS!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="main-controls">
+                <button class="control-btn" id="betOptionsBtn">
+                    BET<br>OPTIONS
+                </button>
+                
+                <button class="spin-btn" id="spinBtn">
+                    SPIN
+                </button>
+                
+                <button class="control-btn" id="autoplayBtn">
+                    AUTOPLAY
+                </button>
+            </div>
+        </div>
+
+        <!-- Win Display (hidden by default) -->
+        <div class="win-display" id="winDisplay">
+            <div class="win-amount" id="winAmount">$0.00</div>
+            <div class="win-text" id="winText">BIG WIN!</div>
+        </div>
+
+        <!-- Stats Panel (collapsible) -->
+        <div class="stats-panel" id="statsPanel">
+            <h3 class="blue mb-15 center">STATISTICS</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Total Spins</div>
+                    <div class="stat-value" id="statSpins">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total Wagered</div>
+                    <div class="stat-value" id="statWagered">$0.00</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total Won</div>
+                    <div class="stat-value" id="statWon">$0.00</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Biggest Win</div>
+                    <div class="stat-value" id="statBiggest">$0.00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" id="navHome">
+            <div class="nav-icon" style="position: relative;">
+                🏠
+            </div>
+            <div class="nav-label">Home</div>
+        </div>
+        <div class="nav-item" id="navPayouts">
+            <div class="nav-icon" style="position: relative;">
+                📋
+                <span class="nav-badge">1</span>
+            </div>
+            <div class="nav-label">Payouts</div>
+        </div>
+        <div class="nav-item" id="navWallet">
+            <div class="nav-icon" style="position: relative;">
+                💼
+            </div>
+            <div class="nav-label">Wallet</div>
+        </div>
+        <div class="nav-item" id="navSettings">
+            <div class="nav-icon" style="position: relative;">
+                ⚙️
+            </div>
+            <div class="nav-label">Settings</div>
+        </div>
+        <div class="nav-item" id="navMenu">
+            <div class="nav-icon">☰</div>
+            <div class="nav-label">Menu</div>
+        </div>
+    </div>
+
+    <!-- Marketing Sections -->
+    <section class="features" id="features">
+        <h2>Why Players Choose Us</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon">🔒</div>
+                <h3>Provably Fair</h3>
+                <p>HMAC-SHA256 seeds with client nonce verification ensure every spin is auditable.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">⚖</div>
+                <h3>97% RTP</h3>
+                <p>Balanced payouts with WILD substitution target a transparent ~97% RTP.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">⚡</div>
+                <h3>Fast Payouts</h3>
+                <p>Lightning-fast withdrawals with clear history in your Wallet.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🎨</div>
+                <h3>Neon Cosmic Design</h3>
+                <p>Immersive visuals with glow and motion to keep the excitement high.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="how" id="how">
+        <h2>How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="num">1</div>
+                <h4>Deposit</h4>
+                <p>Add funds with your preferred method — card, bank, PayPal, or crypto.</p>
+            </div>
+            <div class="step">
+                <div class="num">2</div>
+                <h4>Set Your Stake</h4>
+                <p>Choose your bet and lot size, then spin. WILDs help form wins.</p>
+            </div>
+            <div class="step">
+                <div class="num">3</div>
+                <h4>Withdraw</h4>
+                <p>Track bets and payouts in Transactions. Cash out anytime.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="fair" id="fair">
+        <h2>Provably Fair, End-to-End</h2>
+        <p class="fair-copy">Every reel position is generated with a hashed server seed and your client seed. Verify any spin retroactively and compare positions. Transparency is built-in.</p>
+        <div class="fair-cta">
+            <button class="pill-btn outline" id="learnFairCta">Learn More</button>
+        </div>
+    </section>
+
+    <section class="testimonials" id="testimonials">
+        <h2>Loved by Players</h2>
+        <div class="testi-grid">
+            <div class="testi">
+                <p>“The glow and speed are insane. Wilds make it thrilling without feeling rigged.”</p>
+                <div class="user">— Alex G.</div>
+            </div>
+            <div class="testi">
+                <p>“Finally a slot that explains fairness. I can verify spins. Trust matters.”</p>
+                <div class="user">— Mariam R.</div>
+            </div>
+            <div class="testi">
+                <p>“Deposits and withdrawals are smooth. Wallet history keeps me in control.”</p>
+                <div class="user">— Omar S.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq" id="faq">
+        <h2>FAQ</h2>
+        <div class="faq-list">
+            <div class="faq-item">
+                <button class="faq-q">What does provably fair mean?</button>
+                <div class="faq-a">It means you can independently verify any spin result using the server seed (revealed), client seed, and nonce. We hash seeds ahead of time and increment nonces each spin.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">How fast are withdrawals?</button>
+                <div class="faq-a">In demo mode, instant. In production, it depends on method but typically minutes to hours after KYC/AML checks.</div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">What’s the RTP and house edge?</button>
+                <div class="faq-a">The game targets ~97% RTP, translating to a ~3% house edge. Actual results vary per session.</div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="brand">🌌 Cosmic Fortunes</div>
+            <div class="links">
+                <a href="#features" data-scroll>Features</a>
+                <a href="#fair" data-scroll>Provably Fair</a>
+                <a href="#how" data-scroll>How It Works</a>
+                <a href="#faq" data-scroll>FAQ</a>
+            </div>
+            <div class="legal">© <span id="year"></span> Cosmic Fortunes · <a href="responsible.html" class="legal-link">Responsible Play</a> · <a href="terms.html" class="legal-link">Terms</a> · <a href="privacy.html" class="legal-link">Privacy</a></div>
+        </div>
+    </footer>
+
+    <!-- Support Chat Floating Button -->
+    <button class="support-btn" id="supportChatBtn" title="Support">💬</button>
+
+    <!-- Support Chat Modal -->
+    <div class="modal" id="supportChatModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🛟 Support</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="supportMessages" class="support-messages"></div>
+                <div class="support-input">
+                    <textarea id="supportInput" rows="2" placeholder="Type your message..."></textarea>
+                    <button class="pill-btn" id="supportSendBtn">Send</button>
+                </div>
+                <p class="muted" style="margin-top:10px">AI assistant will try to help. For account-specific issues, an agent may follow up.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallet Modal -->
+    <div class="modal" id="walletModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>💼 Wallet</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="quick-stats mb-10">
+                    <div class="stat-box">
+                        <div class="stat-label">Current Balance</div>
+                        <div class="stat-value" id="walletBalanceModal">$0.00</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">House Pool</div>
+                        <div class="stat-value" id="housePoolModal">$0.00</div>
+                    </div>
+                </div>
+
+                <div class="wallet-grid">
+                    <div class="wallet-card">
+                        <h3>➕ Deposit</h3>
+                        <div class="setting-item">
+                            <label>Amount</label>
+                            <input type="number" id="depositAmount" min="0.01" max="100000" step="0.01" value="50" />
+                        </div>
+                        <div class="setting-item">
+                            <label>Method</label>
+                            <select id="depositMethod">
+                                <option value="card">Credit/Debit Card</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="crypto">Crypto (USDT)</option>
+                                <option value="bank">Bank Transfer</option>
+                            </select>
+                        </div>
+                        <button class="pill-btn full" id="depositSubmit">Deposit</button>
+                        <p class="muted">Instant demo processing. In production, integrate a PSP (Stripe, PayPal, CoinPayments).</p>
+                    </div>
+
+                    <div class="wallet-card">
+                        <h3>💸 Withdraw</h3>
+                        <div class="setting-item">
+                            <label>Amount</label>
+                            <input type="number" id="withdrawAmount" min="0.01" max="100000" step="0.01" value="50" />
+                        </div>
+                        <div class="setting-item">
+                            <label>Method</label>
+                            <select id="withdrawMethod">
+                                <option value="bank">Bank Transfer</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="crypto">Crypto (USDT)</option>
+                            </select>
+                        </div>
+                        <button class="pill-btn full outline" id="withdrawSubmit">Withdraw</button>
+                        <p class="muted">Demo withdrawals are instant. In production, add KYC and AML checks.</p>
+                    </div>
+                </div>
+
+                <div class="stats-panel mt-20">
+                    <h3 class="blue mb-10">Recent Transactions</h3>
+                    <div class="filter-tabs" id="txFilters">
+                        <button class="filter-btn active" data-kind="all">All</button>
+                        <button class="filter-btn" data-kind="deposit">Deposits</button>
+                        <button class="filter-btn" data-kind="withdraw">Withdrawals</button>
+                        <button class="filter-btn" data-kind="bet">Bets</button>
+                        <button class="filter-btn" data-kind="payout">Payouts</button>
+                    </div>
+                    <div id="txList" class="tx-list mt-10"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Home Modal -->
+    <div class="modal" id="homeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🏠 Home</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="home-section">
+                    <h3>Welcome to Cosmic Fortunes!</h3>
+                    <p>Experience the thrill of our professional slot game with:</p>
+                    <ul>
+                        <li>🌍 Three Main Planets: Earth, Moon & Rainbow Planet</li>
+                        <li>✨ WILD Symbol Substitution</li>
+                        <li>🎰 9 Exciting Paylines</li>
+                        <li>💰 97% RTP - Fair & Provable</li>
+                        <li>🎨 Stunning Neon Design</li>
+                    </ul>
+                    <div class="quick-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Your Balance</div>
+                            <div class="stat-value" id="modalBalance">$1250.75</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Current Bet</div>
+                            <div class="stat-value" id="modalBet">$1.50</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ Settings</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3>Game Settings</h3>
+                    
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="soundToggle" checked>
+                            Sound Effects
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="musicToggle" checked>
+                            Background Music
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="animationsToggle" checked>
+                            Animations
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="turboModeToggle">
+                            Turbo Mode (Faster Spins)
+                        </label>
+                    </div>
+
+                    <h3 style="margin-top: 20px;">Game Info</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">RTP</div>
+                            <div class="info-value">97.00%</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">House Edge</div>
+                            <div class="info-value">3.00%</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Paylines</div>
+                            <div class="info-value">9</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Max Win</div>
+                            <div class="info-value">375x</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="sounds.js"></script>
+    <script src="game_professional.js"></script>
+    <script src="features.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      - ALLOWED_ORIGINS=http://localhost:8080,http://127.0.0.1:8080
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-change-me}
+      # Optional request signing for admin endpoints
+      # - SIGNING_SECRET=${SIGNING_SECRET}
+      # - SIGNING_REQUIRED_ADMIN=true
+      # Optional IP allowlist
+      # - ALLOWED_ADMIN_IPS=127.0.0.1
+    volumes:
+      - ./backend/casino.db:/app/casino.db
+    expose:
+      - "5000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+
+volumes: {}
+    # persist sqlite db (casino.db lives in /app)
+
