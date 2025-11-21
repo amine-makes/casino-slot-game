@@ -179,15 +179,27 @@ exports.handler = async (event, context) => {
     };
   }
 
-  const path = event.path.replace('/api', '');
+  // Extract path - handle both direct function calls and API routes
+  let path = event.path || '';
+  if (path.startsWith('/.netlify/functions/api')) {
+    path = path.replace('/.netlify/functions/api', '');
+  }
+  path = path.replace('/api', '') || '/';
+  
   const method = event.httpMethod;
   
   try {
     let response;
     
     switch (`${method} ${path}`) {
+      case 'GET /':
       case 'GET /health':
-        response = { status: 'ok', timestamp: Date.now() };
+        response = { 
+          status: 'ok', 
+          timestamp: Date.now(),
+          version: '1.0.0',
+          environment: 'netlify-functions'
+        };
         break;
         
       case 'POST /session':
