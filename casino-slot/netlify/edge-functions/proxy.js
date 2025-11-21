@@ -1,39 +1,40 @@
-// Netlify Edge Function: Proxy /api/* to external backend
-// Uses BACKEND_ORIGIN env var, e.g. https://your-backend.example.com
-
+// Netlify Edge Function: Proxy /api/* to your backend
 export default async (request, context) => {
-  const backend = Deno.env.get("BACKEND_ORIGIN");
+  const backend = Deno.env.get('BACKEND_ORIGIN');
   if (!backend) {
-    return new Response("BACKEND_ORIGIN not configured", { status: 500 });
+    return new Response(
+      JSON.stringify({
+        error: "BACKEND_ORIGIN not configured",
+        hint: "Set BACKEND_ORIGIN env var in Netlify to your backend URL",
+      }),
+      { status: 500, headers: { "content-type": "application/json" } }
+    );
   }
+
   const reqUrl = new URL(request.url);
-  const pathAndQuery = reqUrl.pathname + reqUrl.search;
-  // Ensure single slash between origin and path
+  const pathAndQuery = reqUrl.pathname + reqUrl.search; // e.g. /api/health?x=1
   const target = backend.replace(/\/$/, "") + pathAndQuery;
 
-  // Clone headers and add forwarding hints
   const headers = new Headers(request.headers);
-  headers.set("X-Forwarded-Host", reqUrl.host);
-  headers.set("X-Forwarded-Proto", reqUrl.protocol.replace(":", ""));
+  headers.delete("host");
+  headers.set("x-forwarded-host", reqUrl.host);
+  headers.set("x-forwarded-proto", reqUrl.protocol.replace(":", ""));
 
-  // Build fetch options
-  const init = {
+  const hasBody = request.method !== "GET" && request.method !== "HEAD";
+  const body = hasBody ? await request.arrayBuffer() : undefined;
+
+  const upstream = await fetch(target, {
     method: request.method,
     headers,
-    body: undefined,
-  };
-  if (!['GET', 'HEAD'].includes(request.method)) {
-    // Preserve body for non-GET/HEAD
-    const buf = await request.arrayBuffer();
-    init.body = buf;
-  }
+    body,
+    redirect: "manual",
+  });
 
-  const resp = await fetch(target, init);
-
-  // Pass-through response with headers and status
-  const outHeaders = new Headers(resp.headers);
-  return new Response(resp.body, {
-    status: resp.status,
-    headers: outHeaders,
+  return new Response(upstream.body, {
+    status: upstream.status,
+    headers: upstream.headers,
   });
 };
+
+export const config = { path: "/api/*" };
+
