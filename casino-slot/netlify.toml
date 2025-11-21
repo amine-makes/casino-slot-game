@@ -1,12 +1,13 @@
 [build]
   publish = "frontend"
   command = ""
-  edge_functions = "netlify/edge-functions"
+  functions = "netlify/functions"
 
-# Route all /api/* requests to the proxy edge function
-[[edge_functions]]
-  function = "proxy"
-  path = "/api/*"
+# Route all /api/* requests to the serverless function
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api"
+  status = 200
 
 # Optional: clean URLs and default to professional index
 [[redirects]]

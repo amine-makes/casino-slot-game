@@ -24,7 +24,7 @@ async function track(name, props = {}) {
 // Initialize game
 async function initGame() {
     try {
-        const response = await fetch(`${API_BASE}/game/new`, {
+        const response = await fetch(`${API_BASE}/session`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -95,10 +95,14 @@ async function spin() {
         track('spin_attempt', { wager, betAmount, lotSize });
 
         // Get result from API
-        const response = await fetch(`${API_BASE}/game/spin/${sessionId}`, {
+        const response = await fetch(`${API_BASE}/spin`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ bet_amount: betAmount * lotSize })
+            body: JSON.stringify({ 
+                session_id: sessionId,
+                bet_amount: betAmount * lotSize,
+                client_seed: 'player'
+            })
         });
         if (!response.ok) {
             const err = await response.json().catch(() => ({ error: 'Spin failed' }));
@@ -110,7 +114,7 @@ async function spin() {
         setTimeout(() => {
             displayResult(result);
             // Trust server wallet balance
-            balance = Number(result.wallet_balance || balance);
+            balance = Number(result.balance || balance);
             updateDisplay();
 
             // Show win if any
@@ -467,7 +471,7 @@ window.addEventListener('load', () => {
 async function refreshWallet() {
     if (!sessionId) return;
     try {
-        const r = await fetch(`${API_BASE}/wallet/balance/${sessionId}`);
+        const r = await fetch(`${API_BASE}/wallet/balance?session_id=${sessionId}`);
         if (r.ok) {
             const d = await r.json();
             balance = Number(d.balance || 0);
